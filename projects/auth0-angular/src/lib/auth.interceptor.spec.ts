@@ -52,6 +52,8 @@ describe('The Auth HTTP Interceptor', () => {
           '',
           '/api/photos',
           '/api/people*',
+          '/api/*/admin',
+          '/api/*/admin/*',
           'https://my-api.com/orders',
           { uri: '/api/orders' },
           {
@@ -127,6 +129,20 @@ describe('The Auth HTTP Interceptor', () => {
     ) => {
       // Testing /api/people* (wildcard match)
       assertAuthorizedApiCallTo('/api/people/profile', done);
+    }));
+
+    it('attach the access token when the wildcard is within the configuration uri', fakeAsync((
+      done
+    ) => {
+      // Testing /api/*/admin (wildcard anywhere)
+      assertAuthorizedApiCallTo('/api/company/admin', done);
+    }));
+
+    // Testing /api/*/admin/* (wildcard anywhere and at the end)
+    it('attach the access token when the wildcard is within and at the end of the configuration uri', fakeAsync((
+      done
+    ) => {
+      assertAuthorizedApiCallTo('/api/company/admin/46', done);
     }));
 
     it('matches a full url to an API', fakeAsync((done) => {

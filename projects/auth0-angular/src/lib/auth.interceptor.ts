@@ -111,6 +111,18 @@ export class AuthHttpInterceptor implements HttpInterceptor {
       ) {
         return true;
       }
+
+      if (value.includes('*') && value.indexOf('*') !== value.length - 1) {
+        const index = value.indexOf('*');
+        const previousChars = value.substr(0, index - 1);
+        const subsequentChars = value.substr(index + 1, value.length - 1);
+        if (
+          request.url.startsWith(previousChars) &&
+          request.url.includes(subsequentChars)
+        ) {
+          return true;
+        }
+      }
     };
 
     if (isHttpInterceptorRouteConfig(route)) {

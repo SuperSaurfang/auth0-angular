@@ -115,8 +115,30 @@ export class AuthHttpInterceptor implements HttpInterceptor {
       if (value.includes('*') && value.indexOf('*') !== value.length - 1) {
         const index = value.indexOf('*');
         const previousChars = value.substr(0, index - 1);
-        const subsequentChars = value.substr(index + 1, value.length - 1);
+        let subsequentChars = value.substring(index + 1, value.length);
+        let hasEndAsterisk = false;
+
+        // check for asterisk at the end of string
+        if (subsequentChars.indexOf('*') === subsequentChars.length - 1) {
+          subsequentChars = subsequentChars.substr(
+            0,
+            subsequentChars.length - 1
+          );
+          hasEndAsterisk = true;
+        }
+
+        // check for URL where asterisk is withhin allowed url
         if (
+          !hasEndAsterisk &&
+          request.url.startsWith(previousChars) &&
+          request.url.endsWith(subsequentChars)
+        ) {
+          return true;
+        }
+
+        // check for url where the asterisk is withhin and at the end of allowed url
+        if (
+          hasEndAsterisk &&
           request.url.startsWith(previousChars) &&
           request.url.includes(subsequentChars)
         ) {
